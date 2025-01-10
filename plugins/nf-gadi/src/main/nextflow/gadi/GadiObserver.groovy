@@ -160,6 +160,7 @@ class GadiObserver implements TraceObserver {
                         "requestedWalltime": entry["requestedWalltime"].toString(),
                         "requestedJobFS": entry["requestedJobFS"].toString(),
                         "usedJobFS": entry["usedJobFS"].toString(),
+                        "queue": entry["queue"].toString(),
                         "name": entry["name"].toString()
                     ]
                     cachedJson[name] = values
@@ -199,6 +200,7 @@ class GadiObserver implements TraceObserver {
             List<String> headers = [
                 "Name",
                 "Process",
+                "Queue",
                 "Service Units",
                 "CPUs",
                 "CPU time",
@@ -375,6 +377,9 @@ class GadiObserver implements TraceObserver {
         final report = Path.of(workdir + "/.command.log")
         // log.info "onProcessComplete was invoked! ${handler.task.name} ${report.toUriString()} ${jobid}"
         // log.info "onProcessComplete was invoked! ${handler.status} "
+        // log.info "onProcessComplete was invoked! harndler info ${handler} "
+        final queue = trace.get('queue').toString() as String
+
 
         Map<String, String> values = [:]
 
@@ -395,8 +400,7 @@ class GadiObserver implements TraceObserver {
             }
 
             values = extractValuesFromReport(report.toUriString()) as Map
-
-            
+         
             while (values.sus == null || values.walltime == null || values.cpus == null || values.memory == null) {
                 sleep(10000)
                 log.info "Waiting for log file to complete"
@@ -407,6 +411,8 @@ class GadiObserver implements TraceObserver {
                     break;
                 }
             }
+
+            values["queue"] = queue
         }
 
         String process_name = handler.task.name
@@ -415,6 +421,7 @@ class GadiObserver implements TraceObserver {
             List<String> row = [
                 process_name,
                 process_name.split(/\s+/)[0],
+                values.queue,
                 values.sus,
                 values.cpus,        
                 values.cputime,
