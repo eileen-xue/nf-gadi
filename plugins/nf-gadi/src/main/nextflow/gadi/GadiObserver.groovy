@@ -72,7 +72,6 @@ class GadiObserver implements TraceObserver {
         }
     }
         
-    // Path csv_path = Paths.get("UsageReport.csv")
     void configCheck() {
         if (format.isEmpty() && output.isEmpty()) {
             format = 'csv'
@@ -121,80 +120,10 @@ class GadiObserver implements TraceObserver {
         }
     }
 
-    void extractCSV(String file) {
-        def lines = Files.readAllLines(Paths.get(file))
-
-        if (lines.isEmpty()) {
-            println "The CSV file is empty."
-            return
-        }
-
-        // def header = lines[0].split(',') 
-        def dataRows = lines[1..-1]  
-
-        dataRows.collect { line ->
-            def values = line.split(',')
-            cachedCSV[values[0]] = values[0..-1]
-        }
-    }
-
-    void extractJson (String file) {
-        def jsonContent = new String(Files.readAllBytes(path))
-
-        Map<String, List<Map<String, String>>> jsonMap = new JsonSlurper().parseText(jsonContent) as Map
-
-        jsonMap.each { key, valueList ->
-            if (valueList instanceof List) {
-                valueList.each { entry ->
-                    String name = entry["name"].toString()
-
-                    Map<String, String> values = [
-                        "sus": entry["sus"].toString(), 
-                        "walltime": entry["walltime"].toString(), 
-                        "cputime": entry["cputime"].toString(), 
-                        "cpus": entry["cpus"].toString(), 
-                        "memory": entry["memory"].toString(), 
-                        "efficiency": entry["efficiency"].toString(), 
-                        "exitCode": entry["exitCode"].toString(), 
-                        "requestedMemory": entry["requestedMemory"].toString(), 
-                        "requestedWalltime": entry["requestedWalltime"].toString(),
-                        "requestedJobFS": entry["requestedJobFS"].toString(),
-                        "usedJobFS": entry["usedJobFS"].toString(),
-                        "queue": entry["queue"].toString(),
-                        "name": entry["name"].toString()
-                    ]
-                    cachedJson[name] = values
-                }
-            }
-        }
-    }
-
 
     @Override
     void onFlowBegin() {
         configCheck()
-
-        Path original = Paths.get(output)
-        if(Files.exists(original)){
-            // cached = true
-            log.info "Found cached report file: ${original}"
-
-            if(format == 'csv'){
-                extractCSV(output)
-            } else {
-                extractJson(output)
-            }
-            
-            File tmpFile = Files.createTempFile("tempCopy_", ".tmp").toFile()
-
-            Files.copy(original, tmpFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
-
-            log.info "Temporary file copy to: ${tmpFile.absolutePath}"
-
-        } else {
-            log.info "No cached report file found: ${original}"
-        }
-
 
         if(format == 'csv') {
             List<String> headers = [
@@ -222,37 +151,13 @@ class GadiObserver implements TraceObserver {
 
     @Override
     void onFlowComplete() {
-        log.info "Pipeline complete! 👋"
-        // String format = config.format ?: 'csv'
-
-        // log.info "${format}, ${output}"
-        // final myJson = results.collectEntries { key, values ->
-        //     def valueMap = values as Map<String, String>
-        //     [
-        //         (key): [
-        //             "Process": valueMap['process'],
-        //             "Service Units": valueMap['sus'], 
-        //             "CPUs": valueMap['cpus'], 
-        //             "CPU time": valueMap['cputime'],
-        //             "Used Walltime": valueMap['walltime'], 
-        //             "Requested Walltime": valueMap['requestedWalltime'],                    
-        //             "Used Memory": valueMap['memory'], 
-        //             "Requested Memory": valueMap['requestedMemory'],
-        //             "Used JobFS": valueMap['usedJobFS'],
-        //             "Requested JobFS": valueMap['requestedJobFS'],
-        //             "Efficiency": valueMap['efficiency'],
-        //             "Exit Code": valueMap['exitCode']
-        //         ]
-        //     ]
-        // }
-
-        // def jsonOutput = JsonOutput.toJson(results)
-
-        // final json_path = "UsageReport.json" as Path
-        // Files.write(json_path, JsonOutput.prettyPrint(JsonOutput.toJson(myJson)).bytes)
+        
         if(format == 'json'){
             Files.write(path, JsonOutput.prettyPrint(JsonOutput.toJson(results)).bytes)
-        }       
+        }      
+
+        log.info "Pipeline complete! 👋"
+ 
     }
 
     def extractValuesFromReport(String filePath) {
@@ -350,24 +255,46 @@ class GadiObserver implements TraceObserver {
 
     @Override
     void onProcessCached(TaskHandler handler, TraceRecord trace){
-        String process_name = handler.task.name
 
-        log.info "get report from cache process"
+        final jobid = (trace.get('native_id') as String).trim()
+        final workdir = trace.get('workdir').toString() as String
+        final report = Path.of(workdir + "/.command.log")
+        final queue = trace.get('queue').toString() as String
 
-        if(format == 'csv') {
-            if(cachedCSV.containsKey(process_name)) {
-                Files.write(path, (cachedCSV[process_name].join(',') + '\n').getBytes(), StandardOpenOption.APPEND)
-            }          
-        } else {
-            addToResults(process_name.split(/\s+/)[0], [cachedJson[process_name]])
-            // if(cachedJson.containsKey(process_name)) {
-            //     if (results.containsKey(process_name.split(/\s+/)[0])) {
-            //         results[process_name.split(/\s+/)[0]] << cachedJson[process_name]
-            //     } else {
-            //         results[process_name.split(/\s+/)[0]] = [cachedJson[process_name]]
-            //     }
-            // }
+        Map<String, String> values = [:]
+
+        if (jobid.contains('gadi-pbs')) {
+            values = extractValuesFromReport(report.toUriString()) as Map
+            values["queue"] = queue
         }
+
+        String process_name = handler.task.name
+        if(format == 'csv') {
+
+            List<String> row = [
+                process_name,
+                process_name.split(/\s+/)[0],
+                values.queue,
+                values.sus,
+                values.cpus,        
+                values.cputime,
+                values.walltime,
+                values.requestedWalltime,
+                values.memory,
+                values.requestedMemory,
+                values.usedJobFS,
+                values.requestedJobFS,
+                values.efficiency,
+                values.exitCode
+            ]
+    
+            Files.write(path, (row.join(',') + '\n').getBytes(), StandardOpenOption.APPEND)
+        }
+
+        values['name'] = process_name
+
+        addToResults(process_name.split(/\s+/)[0], [values])
+
     }
 
     
@@ -375,15 +302,9 @@ class GadiObserver implements TraceObserver {
         final jobid = (trace.get('native_id') as String).trim()
         final workdir = trace.get('workdir').toString() as String
         final report = Path.of(workdir + "/.command.log")
-        // log.info "onProcessComplete was invoked! ${handler.task.name} ${report.toUriString()} ${jobid}"
-        // log.info "onProcessComplete was invoked! ${handler.status} "
-        // log.info "onProcessComplete was invoked! harndler info ${handler} "
         final queue = trace.get('queue').toString() as String
 
-
         Map<String, String> values = [:]
-
-        log.info "get report from completed process"
 
         if (jobid.contains('gadi-pbs')) {
 
@@ -440,11 +361,7 @@ class GadiObserver implements TraceObserver {
 
 
         values['name'] = process_name
-        // if (results.containsKey(process_name.split(/\s+/)[0])) {
-        //     results[process_name.split(/\s+/)[0]] << values
-        // } else {
-        //     results[process_name.split(/\s+/)[0]] = [values]
-        // }
+
         addToResults(process_name.split(/\s+/)[0], [values])
         
     }
