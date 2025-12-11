@@ -3,14 +3,7 @@
 .idea
 .nextflow*
 gradle.properties
-buildSrc/build
-buildSrc/.gradle
-plugins/nf-gadi/src/test
-plugins/nf-gadi/build
-
 
 # Ignore Gradle build output directory
 build
 work
-out
-nextflow.config

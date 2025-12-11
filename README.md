@@ -9,7 +9,7 @@
 ### Install from release
 Set the environment variable 
 ```
-export NXF_PLUGINS_TEST_REPOSITORY="https://github.com/eileen-xue/nf-gadi/releases/download/1.0.1/nf-gadi-1.0.1-meta.json"
+export NXF_PLUGINS_TEST_REPOSITORY="https://github.com/eileen-xue/nf-gadi/releases/download/1.1.0/nf-gadi-1.1.0-meta.json"
 ```
 Nextflow will download the plugin from the online release when executing. 
 
@@ -40,7 +40,7 @@ There are two methods to run the Nextflow pipeline with the plugin
 Add the plugin to the configuration file 
 ```
 plugins {
-    id 'nf-gadi@1.0.1'
+    id 'nf-gadi@1.1.0'
 }
 ```
 Then run the Nextflow pipeline with `nextflow run main.nf`
@@ -48,5 +48,5 @@ Then run the Nextflow pipeline with `nextflow run main.nf`
 ### Nextflow command 
 Another method to run the plugin is by adding it to the Nextflow command 
 ``` 
-nextflow run main.nf -plugins nf-gadi@1.0.1
+nextflow run main.nf -plugins nf-gadi@1.1.0
 ```

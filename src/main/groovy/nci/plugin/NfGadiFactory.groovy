@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, Seqera Labs
+ * Copyright 2025, Seqera Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,28 @@
  * limitations under the License.
  */
 
-package nextflow.gadi
+package nci.plugin
 
 import groovy.transform.CompileStatic
 import nextflow.Session
 import nextflow.trace.TraceObserver
 import nextflow.trace.TraceObserverFactory
+
 /**
- * Implements the validation observer factory
- *
- * @author Paolo Di Tommaso <paolo.ditommaso@gmail.com>
+ * Implements a factory object required to create
+ * the {@link NfGadiObserver} instance.
  */
 @CompileStatic
-class GadiFactory implements TraceObserverFactory {
+class NfGadiFactory implements TraceObserverFactory {
 
     @Override
     Collection<TraceObserver> create(Session session) {
         final result = new ArrayList()
-        result.add( new GadiObserver(session) )
+        result.add( new NfGadiObserver(session) )
         return result
     }
+    // Collection<TraceObserver> create(Session session) {
+    //     return List.<TraceObserver>of(new NfGadiObserver())
+    // }
+
 }

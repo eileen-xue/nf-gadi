@@ -1,0 +1,16 @@
+plugins {
+    id 'io.nextflow.nextflow-plugin' version '1.0.0-beta.10'
+}
+
+version = '1.1.0'
+
+nextflowPlugin {
+    nextflowVersion = '24.04.1'
+
+    provider = 'NCI Australia'
+    className = 'nci.plugin.NfGadiPlugin'
+    extensionPoints = [
+        'nci.plugin.NfGadiExtension',
+        'nci.plugin.NfGadiFactory'
+    ]
+}

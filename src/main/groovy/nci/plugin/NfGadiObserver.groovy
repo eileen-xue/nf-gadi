@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, Seqera Labs
+ * Copyright 2025, Seqera Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package nextflow.gadi
+package nci.plugin
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
@@ -35,18 +35,16 @@ import java.util.regex.Matcher
 
 import static java.lang.Math.ceil
 
-
 /**
- *
- * @author Wenjing Xue <wenjing.xue@anu.edu.au>, Matthew Downton <matthew.downton@anu.edu.au>
+ * Implements an observer that allows implementing custom
+ * logic on nextflow execution events.
  */
-
 @Slf4j
 @CompileStatic
-class GadiObserver implements TraceObserver {
+class NfGadiObserver implements TraceObserver {
     private Session session
 
-    GadiObserver(Session session) {
+    NfGadiObserver(Session session) {
         this.session = session
     }
 
@@ -120,6 +118,10 @@ class GadiObserver implements TraceObserver {
         }
     }
 
+    @Override
+    void onFlowCreate(Session session) {
+        println "Pipeline is starting! 🚀"
+    }
 
     @Override
     void onFlowBegin() {
@@ -144,10 +146,8 @@ class GadiObserver implements TraceObserver {
             ]
 
             Files.write(path, (headers.join(',') + '\n').getBytes())
-        }
-        
+        }      
     }
-
 
     @Override
     void onFlowComplete() {
@@ -157,10 +157,9 @@ class GadiObserver implements TraceObserver {
         }      
 
         log.info "Pipeline complete! 👋"
- 
     }
 
-    def extractValuesFromReport(String filePath) {
+        def extractValuesFromReport(String filePath) {
         def file = new File(filePath)
         def sus = null
         def walltime = null
@@ -365,5 +364,4 @@ class GadiObserver implements TraceObserver {
         addToResults(process_name.split(/\s+/)[0], [values])
         
     }
-
 }

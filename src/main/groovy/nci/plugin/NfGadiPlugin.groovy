@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, Seqera Labs
+ * Copyright 2025, Seqera Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,19 @@
  * limitations under the License.
  */
 
-package nextflow.gadi
+package nci.plugin
 
 import groovy.transform.CompileStatic
 import nextflow.plugin.BasePlugin
-import nextflow.plugin.Scoped
 import org.pf4j.PluginWrapper
-import nextflow.cli.PluginAbstractExec
 
 /**
- * Implements the Gadi plugins entry point
- *
- * @author Paolo Di Tommaso <paolo.ditommaso@gmail.com>
+ * The plugin entry point
  */
-
 @CompileStatic
-class GadiPlugin extends BasePlugin {
-    
-    GadiPlugin(PluginWrapper wrapper) {
+class NfGadiPlugin extends BasePlugin {
+
+    NfGadiPlugin(PluginWrapper wrapper) {
         super(wrapper)
     }
 }

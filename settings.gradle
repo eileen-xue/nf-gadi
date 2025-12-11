@@ -22,5 +22,3 @@ plugins {
 }
 
 rootProject.name = 'nf-gadi'
-include('plugins')
-include('plugins:nf-gadi')
