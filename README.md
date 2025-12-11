@@ -6,6 +6,9 @@
 
 `nf-gadi` plugin provides a usage report for nextflow processes using NCI Gadi PBS Pro executor. To run this plugin, Nextflow version must >= 24.04.1
 ## Installation
+### Download from Nextflow plugin registry
+Start from v1.1.0, this plugin can be download from [Nextflow plugin registry](https://registry.nextflow.io/plugins/nf-gadi)
+
 ### Install from release
 Set the environment variable 
 ```
@@ -40,7 +43,7 @@ There are two methods to run the Nextflow pipeline with the plugin
 Add the plugin to the configuration file 
 ```
 plugins {
-    id 'nf-gadi@1.0.1'
+    id 'nf-gadi@1.1.0'
 }
 ```
 Then run the Nextflow pipeline with `nextflow run main.nf`
@@ -48,5 +51,5 @@ Then run the Nextflow pipeline with `nextflow run main.nf`
 ### Nextflow command 
 Another method to run the plugin is by adding it to the Nextflow command 
 ``` 
-nextflow run main.nf -plugins nf-gadi@1.0.1
+nextflow run main.nf -plugins nf-gadi@1.1.0
 ```
