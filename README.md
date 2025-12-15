@@ -9,8 +9,13 @@
 ### Download from Nextflow plugin registry
 Start from v1.1.0, this plugin can be download from [Nextflow plugin registry](https://registry.nextflow.io/plugins/nf-gadi)
 
-### Install from release
-Set the environment variable 
+Downloading requires Nextflow >= 25.10
+```
+nextflow plugin install nf-gadi@1.1.0   
+```
+
+### Install from release 
+Install a previous version from GitHub release. Set the environment variable 
 ```
 export NXF_PLUGINS_TEST_REPOSITORY="https://github.com/eileen-xue/nf-gadi/releases/download/1.0.1/nf-gadi-1.0.1-meta.json"
 ```
