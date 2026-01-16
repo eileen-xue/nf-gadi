@@ -9,7 +9,6 @@
 ### Download from Nextflow plugin registry
 Start from v1.1.0, this plugin can be download from [Nextflow plugin registry](https://registry.nextflow.io/plugins/nf-gadi)
 
-Downloading requires Nextflow >= 25.10
 ```
 nextflow plugin install nf-gadi@1.1.0   
 ```
