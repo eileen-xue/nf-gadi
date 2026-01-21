@@ -189,7 +189,7 @@ class NfGadiObserver implements TraceObserver {
                 cputime = cputimeMatcher.group(1)
             }
 
-            Matcher cpusMatcher = (line =~ /NCPUs Used:\s+(\d+)/)
+            Matcher cpusMatcher = (line =~ /NCPUs Requested:\s+(\d+)/)
             if (cpusMatcher) {
                 cpus = cpusMatcher.group(1)
             }
@@ -209,17 +209,17 @@ class NfGadiObserver implements TraceObserver {
                 requestedMemory = matcher.group(1)
             }
 
-            matcher = (line =~ /Walltime requested:\s+(\d{2}:\d{2}:\d{2})/)
+            matcher = (line =~ /Walltime Requested:\s+(\d{2}:\d{2}:\d{2})/)
             if (matcher.find()) {
                 requestedWalltime = matcher.group(1)
             }
 
-            matcher = (line =~ /JobFS requested:\s+(\d+\.\d+\wB)/)
+            matcher = (line =~ /JobFS Requested:\s+(\d+\.\d+\wB)/)
             if (matcher.find()) {
                 requestedJobFS = matcher.group(1)
             }
 
-            matcher = (line =~ /JobFS used:\s+(\S+)/)
+            matcher = (line =~ /JobFS Used:\s+(\S+)/)
             if (matcher.find()) {
                 usedJobFS = matcher.group(1)
             }
