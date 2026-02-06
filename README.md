@@ -11,10 +11,20 @@
 Start from v1.1.0, this plugin can be download from [Nextflow plugin registry](https://registry.nextflow.io/plugins/nf-gadi)
 
 ```
+module load nextflow/25.10.3
 nextflow plugin install nf-gadi@1.2.0   
 ```
 
 We recommend to download the plugin before running the workflow. 
+
+If you are using Nextflow < 25.10 and cannot download the latest version, add an additional plugin registry file before installation. 
+```
+module load nextflow/24.04.1 
+
+export NXF_PLUGINS_TEST_REPOSITORY="https://raw.githubusercontent.com/nextflow-io/plugins/ae0dc81429fbab18b1f98c6421c7ce5d92f71253/plugins.json"
+
+nextflow plugin install nf-gadi@1.2.0 
+```
 
 ### Install from repository
 To use this plugin in an offline environment, you will need to download and install this plugin on a system with an internet connection.  
